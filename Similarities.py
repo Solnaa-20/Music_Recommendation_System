@@ -40,7 +40,7 @@ def find_similar_users(target_user,ratings_df):
 
     return sorted_users
 
-def get_top_neighbors(target_user, ratings_df, k = 5):
+def get_top_neighbors(target_user, ratings_df, k = 3):
     similar_users = find_similar_users(
         target_user,
         ratings_df

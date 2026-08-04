@@ -1,10 +1,13 @@
 import numpy as np 
 import pandas as pd 
 import streamlit as st
+from Similarities import recommend_songs
 
 df = pd.read_csv("user_song_ratings.csv")
 df["Display"] = "👤 " + df["Name"] + " (" + df["UserID"] + ")"
 
+ratings_df = df.set_index("UserID").drop(columns=["Name"])
+ratings_df = ratings_df.drop(columns=["Display"])
 
 #Streamlit UI
 
@@ -96,6 +99,7 @@ Discover songs you'll love based on users with similar tastes.
 
 st.divider()
 
+#Recommendation
 with st.container(border=True):
 
     st.subheader("Get Recommendation")
@@ -115,38 +119,42 @@ if recommend:
     user_name = user["Name"]
     user_id = user["UserID"]
     with st.spinner("Getting you a song..."):
-         songs = get_recommendations(user_id)
+        recommendations = recommend_songs(
+            user_id,
+            ratings_df)
+        
+        songs = [song for song, rating in recommendations]    
+       
 
     st.success(f"Found {len(songs)} recommendation(s) for {user_name}")
 
     st.subheader(f"Recommended Songs for {user_name}")
 
-    for i,song in enumerate(songs,start=1):
-        with st.container(border=True):
+    if len(songs)==0:
+        st.info("No recommendations available")
 
-            col1,col2 = st.columns([1,4])
+    else:
+        for i,song in enumerate(songs,start=1):
+            with st.container(border=True):
 
-            with col1:
-                st.image("https://img.icons8.com/fluency/96/music.png",width=70)
+                col1,col2 = st.columns([1,4])
 
-            with col2:
-                st.markdown(f"""
-                    <div class="song-card">
-                        <h4>🎵 {song}</h4>
-                        <p style="color:#B3B3B3;">Recommended Song #{i}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                with col1:
+                    st.image("https://img.icons8.com/fluency/96/music.png",width=70)
+
+                with col2:
+                    st.markdown(f"""
+                        <div class="song-card">
+                            <h4>🎵 {song}</h4>
+                            <p style="color:#B3B3B3;">Recommended Song #{i}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
 
 
 #Ratings chart
 def get_average_ratings():
-
-    ratings = df.drop(columns=["UserID", "Name", "Display"])
-
-    ratings = ratings.replace(0, pd.NA)
-
+    ratings = ratings_df.replace(0, np.nan)
     average_ratings = ratings.mean().sort_values(ascending=False)
-
     return average_ratings
 
 st.divider()

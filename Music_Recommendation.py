@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd 
 import streamlit as st
 
-
+df = pd.read_csv("user_song_ratings.csv")
+df["Display"] = "👤 " + df["Name"] + " (" + df["UserID"] + ")"
 
 
 #Streamlit UI
@@ -102,48 +103,46 @@ with st.container(border=True):
     col1,col2 = st.columns([4,1])
 
     with col1:
-        name = st.text_input("Enter a name",label_visibility="collapsed")
+        selected_user = st.selectbox("Select User",options=df["Display"],label_visibility="collapsed"
+        )
 
     with col2:
         recommend = st.button("Recommend Song(s)", use_container_width=True)
 
 if recommend:
-    if name:
-        with st.spinner("Getting you a song..."):
-            songs = get_recommendations(name)
+    user = df[df["Display"] == selected_user].iloc[0]
 
-        st.success(f"Found {len(songs)} recommendation(s) for {name}")
+    user_name = user["Name"]
+    user_id = user["UserID"]
+    with st.spinner("Getting you a song..."):
+         songs = get_recommendations(user_id)
 
-        st.subheader(f"Recommended Songs for {name}")
+    st.success(f"Found {len(songs)} recommendation(s) for {user_name}")
 
-        for i,song in enumerate(songs,start=1):
-            with st.container(border=True):
+    st.subheader(f"Recommended Songs for {user_name}")
 
-                col1,col2 = st.columns([1,4])
+    for i,song in enumerate(songs,start=1):
+        with st.container(border=True):
 
-                with col1:
-                    st.image("https://img.icons8.com/fluency/96/music.png",width=70)
+            col1,col2 = st.columns([1,4])
 
-                with col2:
-                    st.markdown(f"""
-                        <div class="song-card">
-                            <h4>🎵 {song}</h4>
-                            <p style="color:#B3B3B3;">Recommended Song #{i}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
+            with col1:
+                st.image("https://img.icons8.com/fluency/96/music.png",width=70)
 
-    else:
-        st.warning("Please enter a name")
+            with col2:
+                st.markdown(f"""
+                    <div class="song-card">
+                        <h4>🎵 {song}</h4>
+                        <p style="color:#B3B3B3;">Recommended Song #{i}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
 
 
 #Ratings chart
 def get_average_ratings():
 
-    df = pd.read_csv("user_song_ratings.csv")
+    ratings = df.drop(columns=["UserID", "Name", "Display"])
 
-    ratings = df.drop(columns=["User"])
-
-    # Treat 0 as "not rated"
     ratings = ratings.replace(0, pd.NA)
 
     average_ratings = ratings.mean().sort_values(ascending=False)

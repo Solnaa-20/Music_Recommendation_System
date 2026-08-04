@@ -1,4 +1,5 @@
 import numpy as np
+
 def euclidean_distance(user1_ratings, user2_ratings):
     common_ratings = (user1_ratings > 0) & (user2_ratings > 0)
     if common_ratings.sum() == 0:
@@ -56,4 +57,3 @@ def display_similar_users(target_user,ratings_df,k=5):
 
     for i,(user,distance) in enumerate(neighbors,start=1):
         print(f"{i}.{user}- Distance: {distance:2f}")
-        

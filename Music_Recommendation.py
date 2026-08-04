@@ -151,7 +151,7 @@ def get_average_ratings():
     return average_ratings
 
 st.divider()
-with st.expander("📊 Average Song Ratings"):
+with st.expander("Average Song Ratings"):
     ratings = get_average_ratings()
     st.bar_chart(ratings)  
 

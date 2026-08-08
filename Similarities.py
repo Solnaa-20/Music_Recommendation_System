@@ -34,7 +34,7 @@ def find_similar_users(target_user,ratings_df):
         ratings_df
     )
     sorted_users = sorted(
-        distances.items(),\
+        distances.items(),
         key = lambda x:x[1]
     )
 

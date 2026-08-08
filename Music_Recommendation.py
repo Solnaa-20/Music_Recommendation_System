@@ -6,6 +6,24 @@ from Similarities import recommend_songs
 df = pd.read_csv("user_song_ratings.csv")
 df["Display"] = "👤 " + df["Name"] + " (" + df["UserID"] + ")"
 
+song_images = {
+    "All to well": "images/All Too Well.jpg",
+    "Shape of you": "images/Shape of You.jpg",
+    "Sue me": "images/Sue Me.jpg",
+    "Folded": "images/Folded.jpg",
+    "Unlearn": "images/Unlearn.jpg",
+    "Girls Need Love": "images/Girls Need Love.jpg",
+    "Last Last": "images/Last Last.jpg",
+    "Bout you": "images/Bout U.jpg",
+    "Bounce": "images/Bounce.jpg",
+    "Money Trees": "images/Money Trees.jpg",
+    "New Flame": "images/New Flame.jpg",
+    "Fair Trade": "images/Fair Trade.jpg",
+    "Humble": "images/HUMBLE.jpg",
+    "D1": "images/D1.jpg",
+    "Look Alive": "images/Look Alive.jpg"
+}
+
 ratings_df = df.set_index("UserID").drop(columns=["Name"])
 ratings_df = ratings_df.drop(columns=["Display"])
 
@@ -140,7 +158,8 @@ if recommend:
                 col1,col2 = st.columns([1,4])
 
                 with col1:
-                    st.image("https://img.icons8.com/fluency/96/music.png",width=70)
+                    image_path = song_images.get(song, "images/default.jpg")
+                    st.image(image_path, width=100)
 
                 with col2:
                     st.markdown(f"""
